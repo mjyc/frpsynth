@@ -52,10 +52,10 @@
 
 ; Syntax
 
-; (define (interpret p)
-;   (match p
-;     [(l/map a b) (map a (interpret b))]
-;     [(l/filter a b) (filter a (interpret b))]
-;     [_ p]
-;     )
-;   )
+(define (interpret p)
+  (match p
+    [(l/map a b) (map a (interpret b))]
+    [(l/filter a b) (filter a (interpret b))]
+    [_ p]
+    )
+  )
