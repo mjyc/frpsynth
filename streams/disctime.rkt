@@ -11,12 +11,10 @@
 ; Data types
 
 (define noevent '())
-(define nevt '())
-
 (define noevent? null?)
+; shortcuts
+(define nevt '())
 (define nevt? null?)
-
-; (struct event (stamp value) #:transparent)
 
 
 ; Operators
@@ -24,10 +22,6 @@
 (define (map fn stream)
   (r/map (lambda (x) (if (nevt? x) x (fn x))) stream)
   )
-
-; (define (filter fn stream)
-;   (r/filter (lambda (x) (if (empty? x) x (fn x))) stream)
-; )
 
 (define (filter predicate stream)
   (r/map (lambda (x) (if (or (nevt? x) (not (predicate x))) nevt x)) stream)

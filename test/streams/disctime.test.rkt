@@ -105,7 +105,6 @@
     (test-noevent)
     (test-map)
     (test-filter)
-    ; (test-ap)
     (test-from-diagram)
     (test-solve)
     (test-angexe)
