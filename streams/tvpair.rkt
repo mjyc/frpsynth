@@ -7,7 +7,13 @@
  (prefix-in l/ "../lang.rkt")
  "../lib.rkt")
 
+
+; Data types
+
 (struct event (stamp value) #:transparent)
+
+
+; Operators
 
 (define (map fn stream)
   (define (wrapped evt)
@@ -23,6 +29,7 @@
   (r/filter wrapped stream)
   )
 
+; implements 'ap'; see https://github.com/rpominov/basic-streams#ap
 (define (ap-rec streamf streamv stamp lastf lastv streamr)
   (define sr (cons (event stamp (lastf lastv)) streamr))
   (match (list streamf streamv)
@@ -50,20 +57,15 @@
     [(list '() (list a ...)) '()]
     [(list (list a ...) '()) '()]
     [(list (cons (event tsf valf) sf) (cons (event tsv valv) sv))
-     ; when tied assumes first stream has a lower stamp
+     ; when tied, assumes first stream has a lower stamp
      (define ts (if (> tsf tsv) tsf tsv))
      (reverse (ap-rec sf sv ts valf valv '()))
      ]
     )
   )
 
-(define (interpret p)
-  (match p
-    [(l/map a b) (map a (interpret b))]
-    [(l/filter a b) (filter a (interpret b))]
-    [_ p]
-    )
-  )
+
+; Sources
 
 (define (from-diagram diagramString)
   (define interval 20)
@@ -76,4 +78,15 @@
       )
     )
   (reverse (rec characters 0 '()))
+  )
+
+
+; Syntax
+
+(define (interpret p)
+  (match p
+    [(l/map a b) (map a (interpret b))]
+    [(l/filter a b) (filter a (interpret b))]
+    [_ p]
+    )
   )

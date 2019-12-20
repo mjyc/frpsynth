@@ -6,6 +6,9 @@
 
 (provide (all-defined-out))
 
+
+; Test data types
+
 (define (test-event)
   (test-case
     "test-event"
@@ -14,6 +17,9 @@
     (check-equal? (s/event-value evt) 'hello)
     )
   )
+
+
+; Test transformers
 
 (define (test-map)
   (test-case
@@ -39,14 +45,18 @@
   (test-case
     "test-ap"
     (check-equal? (s/ap '() '()) '())
+    ; test empty val stream
     (check-equal? (s/ap (list (s/event 0 add1)) '()) '())
-    (check-equal? (s/ap '() (list (s/event 1 add1))) '())
+    ; test empty fn stream
+    (check-equal? (s/ap '() (list (s/event 1 0))) '())
+    ; test input streams with single event, varying timestamps
     (check-equal?
       (s/ap (list (s/event 0 add1)) (list (s/event 1 0)))
       (list (s/event 1 1)))
     (check-equal?
       (s/ap (list (s/event 1 add1)) (list (s/event 0 0)))
       (list (s/event 1 1)))
+    ; test input streams with two events, varying timestamps
     (check-equal?
       (s/ap
         (list (s/event 0 add1) (s/event 2 sub1))
@@ -78,6 +88,9 @@
     )
   )
 
+
+; Test sources
+
 (define (test-from-diagram)
   (test-case
     "test-from-diagram"
@@ -90,6 +103,9 @@
     (check-equal? outstream2 expected2)
     )
   )
+
+
+; Test solver-aided programming
 
 (current-bitwidth #f)
 (define-symbolic x y integer?)
@@ -122,6 +138,9 @@
     (check-equal? (evaluate (list b x y) sol) (list #t 0 1))
     )
   )
+
+
+; Main
 
 (module+ test
   (define/provide-test-suite tvpair-tests
