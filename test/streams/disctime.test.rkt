@@ -99,9 +99,27 @@
           (l/map add1 (l/register 0))
           (l/filter odd? (l/register 1))
           )))
-    (define input (list (list 0 1)))
-    (define output (s/program-interpret prog input))
+    (define inputs (list (list 0 1)))
+    (define output (s/program-interpret prog inputs))
     (check-equal? output (list 1 s/noevent))
+
+    (define numinputs2 2)
+    (define prog2
+      (l/program
+        numinputs2
+        (list (l/mapTo 1 (l/register 0))
+          (l/mapTo -1 (l/register 1))
+          (l/merge (l/register 2) (l/register 3))
+          (l/scan + 0 (l/register 4))
+          )))
+    (define inputs2
+      (list
+        (list #t s/noevent #t s/noevent)
+        (list s/noevent #f s/noevent #f)
+        ))
+    (check-equal?
+      (s/program-interpret prog2 inputs2)
+      (list 1 0 1 0))
     )
   )
 
@@ -150,55 +168,35 @@
           (l/merge (l/register 2) (l/register 3))
           (l/scan + 0 (l/register 4))
           )))
+    ; (displayln "spec" spec)
     (define sketch
       (l/program
         numinputs
         (build-list (length (l/program-instructions spec))
           (lambda (x) (??instruction)))
         ))
-    (printf "~%Sketch:~%")
-    (displayln sketch)
-
-    (define test-inputs
+    (define inputs
       (list
         (list #t s/noevent #t s/noevent)
         (list s/noevent #f s/noevent #f)
         ))
-
-    (printf "~%Spec evaluation:~%")
-    (displayln (s/program-interpret spec test-inputs))
-
+    ; (displayln "sketch" sketch)
     (define M
       (solve
         (assert
           (equal?
-            (s/program-interpret spec test-inputs)
-            (s/program-interpret sketch test-inputs)
+            (s/program-interpret spec inputs)
+            (s/program-interpret sketch inputs)
             )))
       )
-    (printf "~%Angelic execution:~%")
-    (cond
-      [(sat? M)
-        (define result (evaluate sketch M))
-        (displayln (s/program->string result))
-        ]
-      [else (displayln "No program found")]
-      )
-
-    (printf "~%Done!~%~%")
-
-    ; (define prog
-    ;   (l/program
-    ;     numinputs
-    ;     (list
-    ;       (l/map add1 (l/register 0))
-    ;       (l/filter odd? (l/register 1))
-    ;       )))
-    ; (define input (list (list 0 1)))
-    ; (define output (s/program-interpret prog input))
-    ; (check-equal? output (list 1 s/noevent))
-
-    (check-true #t)
+    ; (cond
+    ;   [(sat? M)
+    ;     (define result (evaluate sketch M))
+    ;     (displayln (s/program->string result))
+    ;     ]
+    ;   [else (displayln "No program found")]
+    ;   )
+    (check-true (sat? M))
     )
   )
 

@@ -82,7 +82,7 @@
   ; (displayln (list "inst" inst))
   ; (displayln (list "reg" reg))
   (match inst
-    ; TOOD: match constants
+    ; TODO: match constants
     [(l/register idx) (list-ref reg idx)]
     [(l/map a b) (map a (instruction-interpret b reg))]
     [(l/mapTo a b) (mapTo a (instruction-interpret b reg))]
