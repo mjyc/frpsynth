@@ -87,39 +87,39 @@
   )
 
 
-; ; Test solver-aided programming
+; Test solver-aided programming
 
-; (current-bitwidth #f)
-; (define-symbolic x y integer?)
+(current-bitwidth #f)
+(define-symbolic x y integer?)
 
-; (define (test-solve)
-;   (test-case
-;     "test-solve"
-;     (define inst (l/map add1 (list x y)))
-;     (define sol (solve
-;       (assert (equal? (s/instruction-interpret inst) (list 1 1)))))
-;     (check-true (sat? sol))
-;     (check-equal? (evaluate (list x y) sol) (list 0 0))
-;     )
-;   )
+(define (test-solve)
+  (test-case
+    "test-solve"
+    (define inst (l/map add1 (list x y)))
+    (define sol (solve
+      (assert (equal? (s/instruction-interpret inst '()) (list 1 1)))))
+    (check-true (sat? sol))
+    (check-equal? (evaluate (list x y) sol) (list 0 0))
+    )
+  )
 
-; (define-symbolic b boolean?)
+(define-symbolic b boolean?)
 
-; (define (test-angexe)
-;   (test-case
-;     "test-angexe"
-;     (define inst
-;       (if b
-;         (l/map add1 (list x y))
-;         (l/filter odd? (list x y))
-;         )
-;       )
-;     (define sol (solve
-;       (assert (equal? (s/instruction-interpret inst) (list 2 2)))))
-;     (check-true (sat? sol))
-;     (check-equal? (evaluate (list b x y) sol) (list #t 1 1))
-;     )
-;   )
+(define (test-angexe)
+  (test-case
+    "test-angexe"
+    (define inst
+      (if b
+        (l/map add1 (list x y))
+        (l/filter odd? (list x y))
+        )
+      )
+    (define sol (solve
+      (assert (equal? (s/instruction-interpret inst '()) (list 2 2)))))
+    (check-true (sat? sol))
+    (check-equal? (evaluate (list b x y) sol) (list #t 1 1))
+    )
+  )
 
 
 ; Main
@@ -131,8 +131,8 @@
     (test-filter)
     (test-from-diagram)
     (test-instruction-interpret)
-    ; (test-solve)
-    ; (test-angexe)
+    (test-solve)
+    (test-angexe)
     )
   (run-tests disctime-tests)
   )
