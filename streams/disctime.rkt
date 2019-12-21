@@ -17,12 +17,6 @@
 (define nevt '())
 (define nevt? null?)
 
-(struct r (idx) #:transparent)  ; resigter index
-
-; numinputs: a integer value
-; instructions: a list of instructions
-(struct program (numinputs instructions) #:transparent)
-
 
 ; Operators
 
@@ -53,10 +47,11 @@
 
 ; Interpreters
 
-(define (instruction-interpret inst)
+(define (instruction-interpret inst reg)
   (match inst
-    [(l/map a b) (map a (instruction-interpret b))]
-    [(l/filter a b) (filter a (instruction-interpret b))]
+    ; TOOD: match constants
+    [(l/map a b) (map a (instruction-interpret b reg))]
+    [(l/filter a b) (filter a (instruction-interpret b reg))]
     [_ inst]
     )
   )
