@@ -4,6 +4,7 @@
 
 (require
  (prefix-in r/ (only-in rosette/base/base map filter))
+ (only-in rosette/base/core/safe argument-error)
  rosette/lib/angelic rosette/lib/match
  (prefix-in l/ "../lang.rkt")
  "../lib.rkt")
@@ -48,6 +49,8 @@
 ; Interpreters
 
 (define (instruction-interpret inst reg)
+  ; (displayln (list "inst" inst))
+  ; (displayln (list "reg" reg))
   (match inst
     ; TOOD: match constants
     [(l/register idx) (list-ref reg idx)]
@@ -55,4 +58,31 @@
     [(l/filter a b) (filter a (instruction-interpret b reg))]
     [_ inst]
     )
+  )
+
+(define (program-interpret prog inputs)
+  ; (displayln (list "prog" prog))
+  ; (displayln (list "inputs" inputs))
+  (unless (= (l/program-numinputs prog) (length inputs))
+    (argument-error 'program-interpret "expected ~a inputs, given ~a" (l/program-numinputs prog) inputs))
+  (define (exec insts regs)
+    (cond
+      [(null? insts) regs]
+      [else
+        (exec
+          (rest insts)
+          (append regs (list (instruction-interpret (first insts) regs)))
+          )
+        ]
+      ))
+  (define regs
+    (exec (l/program-instructions prog) inputs))
+  ; (displayln (list "regs" regs))
+  (define output
+    (if (or (empty? regs) (= (length regs) (length inputs)))
+      '()
+      (first (reverse regs)))
+    )
+  ; (displayln (list "output" output))
+  output
   )

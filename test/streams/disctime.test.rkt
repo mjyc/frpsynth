@@ -86,6 +86,23 @@
     )
   )
 
+(define (test-program-interpret)
+  (test-case
+    "test-program-interpret"
+    (define numinputs 1)
+    (define prog
+      (l/program
+        numinputs
+        (list
+          (l/map add1 (l/register 0))
+          (l/filter odd? (l/register 1))
+          )))
+    (define input (list (list 0 1)))
+    (define output (s/program-interpret prog input))
+    (check-equal? output (list 1 s/noevent))
+    )
+  )
+
 
 ; Test solver-aided programming
 
@@ -131,6 +148,7 @@
     (test-filter)
     (test-from-diagram)
     (test-instruction-interpret)
+    (test-program-interpret)
     (test-solve)
     (test-angexe)
     )
