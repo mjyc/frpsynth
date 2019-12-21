@@ -2,7 +2,8 @@
 
 (provide (all-defined-out))
 
-(require (prefix-in r/ (only-in rosette/base/base map filter))
+(require
+ (prefix-in r/ (only-in rosette/base/base map filter))
  rosette/lib/angelic rosette/lib/match
  (prefix-in l/ "../lang.rkt")
  "../lib.rkt")
@@ -15,6 +16,12 @@
 ; shortcuts
 (define nevt '())
 (define nevt? null?)
+
+(struct r (idx) #:transparent)  ; resigter index
+
+; numinputs: a integer value
+; instructions: a list of instructions
+(struct program (numinputs instructions) #:transparent)
 
 
 ; Operators
@@ -44,12 +51,12 @@
   )
 
 
-; Syntax
+; Interpreters
 
-(define (interpret p)
-  (match p
-    [(l/map a b) (map a (interpret b))]
-    [(l/filter a b) (filter a (interpret b))]
-    [_ p]
+(define (instruction-interpret inst)
+  (match inst
+    [(l/map a b) (map a (instruction-interpret b))]
+    [(l/filter a b) (filter a (instruction-interpret b))]
+    [_ inst]
     )
   )

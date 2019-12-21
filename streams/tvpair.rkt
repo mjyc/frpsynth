@@ -83,10 +83,10 @@
 
 ; Syntax
 
-(define (interpret p)
-  (match p
-    [(l/map a b) (map a (interpret b))]
-    [(l/filter a b) (filter a (interpret b))]
-    [_ p]
+(define (instruction-interpret inst)
+  (match inst
+    [(l/map a b) (map a (instruction-interpret b))]
+    [(l/filter a b) (filter a (instruction-interpret b))]
+    [_ inst]
     )
   )
