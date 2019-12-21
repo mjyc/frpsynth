@@ -192,6 +192,52 @@
     ; (cond
     ;   [(sat? M)
     ;     (define result (evaluate sketch M))
+    ;     (displayln "angexe result:")
+    ;     (displayln (s/program->string result))
+    ;     ]
+    ;   [else (displayln "No program found")]
+    ;   )
+    (check-true (sat? M))
+    )
+  )
+
+(define (test-synth)
+  (test-case
+    "test-synth"
+    (define numinputs 2)
+    (define spec
+      (l/program
+        numinputs
+        (list (l/mapTo 1 (l/register 0))
+          (l/mapTo -1 (l/register 1))
+          (l/merge (l/register 2) (l/register 3))
+          (l/scan + 0 (l/register 4))
+          )))
+    ; (displayln "spec" spec)
+    (define sketch
+      (l/program
+        numinputs
+        (build-list (length (l/program-instructions spec))
+          (lambda (x) (??instruction)))
+        ))
+    (define sym-inputs
+      (list
+        (s/??stream (lambda () #t) numinputs)
+        (s/??stream (lambda () #f) numinputs)))
+
+    ; (displayln "sketch" sketch)
+    (define M
+      (synthesize
+        #:forall (symbolics sym-inputs)
+        #:guarantee (assert (equal?
+          (s/program-interpret spec sym-inputs)
+          (s/program-interpret sketch sym-inputs)
+          )))
+      )
+    ; (cond
+    ;   [(sat? M)
+    ;     (define result (evaluate sketch M))
+    ;     (displayln "synth result:")
     ;     (displayln (s/program->string result))
     ;     ]
     ;   [else (displayln "No program found")]
@@ -213,6 +259,7 @@
     (test-program-interpret)
     (test-solve)
     (test-angexe)
+    (test-synth)
     )
   (run-tests disctime-tests)
   )
