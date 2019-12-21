@@ -180,7 +180,7 @@
     (cond
       [(sat? M)
         (define result (evaluate sketch M))
-        (displayln result)
+        (displayln (s/program->string result))
         ]
       [else (displayln "No program found")]
       )
