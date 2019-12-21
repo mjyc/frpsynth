@@ -156,7 +156,8 @@
         (build-list (length (l/program-instructions spec))
           (lambda (x) (??instruction)))
         ))
-    (displayln (list "sketch" sketch))
+    (printf "~%Sketch:~%")
+    (displayln sketch)
 
     (define test-inputs
       (list
@@ -164,7 +165,7 @@
         (list s/noevent #f s/noevent #f)
         ))
 
-    (displayln "Spec evaluation:")
+    (printf "~%Spec evaluation:~%")
     (displayln (s/program-interpret spec test-inputs))
 
     (define M
@@ -176,9 +177,15 @@
             )))
       )
     (printf "~%Angelic execution:~%")
-    (if (sat? M)
-      (displayln (evaluate sketch M))
-      (displayln "No program found"))
+    (cond
+      [(sat? M)
+        (define result (evaluate sketch M))
+        (displayln result)
+        ]
+      [else (displayln "No program found")]
+      )
+
+    (printf "~%Done!~%~%")
 
     ; (define prog
     ;   (l/program
