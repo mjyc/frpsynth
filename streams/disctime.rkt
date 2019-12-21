@@ -3,6 +3,7 @@
 (provide (all-defined-out))
 
 (require
+ (only-in racket/base for/list)
  (prefix-in r/ (only-in rosette/base/base map filter))
  (only-in rosette/base/core/safe argument-error)
  rosette/lib/angelic rosette/lib/match
@@ -25,8 +26,36 @@
   (r/map (lambda (x) (if (nevt? x) x (fn x))) stream)
   )
 
+(define (mapTo val stream)
+  ; (displayln (list "val" val))
+  ; (displayln (list "stream" stream))
+  (r/map (lambda (x) (if (nevt? x) x val)) stream)
+  )
+
 (define (filter predicate stream)
   (r/map (lambda (x) (if (or (nevt? x) (not (predicate x))) nevt x)) stream)
+  )
+
+(define (scan accumulator seed stream)
+  (define (fold lst acc)
+    (cond
+      [(empty? lst) '()]
+      [else
+        (define x (first lst))
+        (define v
+          (if (empty? x) acc (accumulator x acc)))
+        (cons v (fold (rest lst) v))
+        ]
+      )
+    )
+  (fold stream seed)
+  )
+
+; if two events at same time are 'noevent', it takes the first event
+(define (merge stream1 stream2)
+  (r/map
+    (lambda (a b) (if (noevent? b) a b))
+    stream1 stream2)
   )
 
 
@@ -55,7 +84,11 @@
     ; TOOD: match constants
     [(l/register idx) (list-ref reg idx)]
     [(l/map a b) (map a (instruction-interpret b reg))]
+    [(l/mapTo a b) (mapTo a (instruction-interpret b reg))]
     [(l/filter a b) (filter a (instruction-interpret b reg))]
+    [(l/scan a b c) (scan a b (instruction-interpret c reg))]
+    [(l/merge a b) (merge
+      (instruction-interpret a reg) (instruction-interpret b reg))]
     [_ inst]
     )
   )
@@ -85,4 +118,17 @@
     )
   ; (displayln (list "output" output))
   output
+  )
+
+
+; Holes
+
+(define (??stream create-event length)
+  (for/list ([i length])
+    (define-symbolic* sb boolean?)
+    (if sb
+      (create-event)
+      noevent
+      )
+    )
   )

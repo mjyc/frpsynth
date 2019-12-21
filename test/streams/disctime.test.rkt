@@ -1,8 +1,10 @@
 #lang rosette/safe
 
 (require rackunit rackunit/text-ui
+ (only-in racket/base build-list)
  (prefix-in s/ "../../streams/disctime.rkt")
- (prefix-in l/ "../../lang.rkt"))
+ (prefix-in l/ "../../lang.rkt")
+ "../../hole.rkt")
 
 (provide (all-defined-out))
 
@@ -108,33 +110,88 @@
 
 (current-bitwidth #f)
 (define-symbolic x y integer?)
+(define-symbolic b boolean?)
 
 (define (test-solve)
   (test-case
     "test-solve"
     (define inst (l/map add1 (list x y)))
     (define sol (solve
-      (assert (equal? (s/instruction-interpret inst '()) (list 1 1)))))
+      (assert (equal?
+        (s/instruction-interpret inst '())
+        (list 1 1)))))
     (check-true (sat? sol))
     (check-equal? (evaluate (list x y) sol) (list 0 0))
-    )
-  )
 
-(define-symbolic b boolean?)
-
-(define (test-angexe)
-  (test-case
-    "test-angexe"
-    (define inst
+    (define inst2
       (if b
         (l/map add1 (list x y))
         (l/filter odd? (list x y))
         )
       )
-    (define sol (solve
-      (assert (equal? (s/instruction-interpret inst '()) (list 2 2)))))
-    (check-true (sat? sol))
-    (check-equal? (evaluate (list b x y) sol) (list #t 1 1))
+    (define sol2 (solve
+      (assert (equal?
+        (s/instruction-interpret inst2 '())
+        (list 2 2)))))
+    (check-true (sat? sol2))
+    (check-equal? (evaluate (list b x y) sol2) (list #t 1 1))
+    )
+  )
+
+(define (test-angexe)
+  (test-case
+    "test-angexe"
+    (define numinputs 2)
+    (define spec
+      (l/program
+        numinputs
+        (list (l/mapTo 1 (l/register 0))
+          (l/mapTo -1 (l/register 1))
+          (l/merge (l/register 2) (l/register 3))
+          (l/scan + 0 (l/register 4))
+          )))
+    (define sketch
+      (l/program
+        numinputs
+        (build-list (length (l/program-instructions spec))
+          (lambda (x) (??instruction)))
+        ))
+    (displayln (list "sketch" sketch))
+
+    (define test-inputs
+      (list
+        (list #t s/noevent #t s/noevent)
+        (list s/noevent #f s/noevent #f)
+        ))
+
+    (displayln "Spec evaluation:")
+    (displayln (s/program-interpret spec test-inputs))
+
+    (define M
+      (solve
+        (assert
+          (equal?
+            (s/program-interpret spec test-inputs)
+            (s/program-interpret sketch test-inputs)
+            )))
+      )
+    (printf "~%Angelic execution:~%")
+    (if (sat? M)
+      (displayln (evaluate sketch M))
+      (displayln "No program found"))
+
+    ; (define prog
+    ;   (l/program
+    ;     numinputs
+    ;     (list
+    ;       (l/map add1 (l/register 0))
+    ;       (l/filter odd? (l/register 1))
+    ;       )))
+    ; (define input (list (list 0 1)))
+    ; (define output (s/program-interpret prog input))
+    ; (check-equal? output (list 1 s/noevent))
+
+    (check-true #t)
     )
   )
 
