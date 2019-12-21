@@ -74,6 +74,15 @@
     (check-equal?
       (s/instruction-interpret inst '())
       (list 1 s/nevt 3))
+
+    (define inst2
+      (l/filter odd?
+        (l/map add1 (l/register 0))))
+    (define input
+      (list (list 0 1 2)))
+    (check-equal?
+      (s/instruction-interpret inst2 input)
+      (list 1 s/nevt 3))
     )
   )
 

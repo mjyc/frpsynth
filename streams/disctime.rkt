@@ -50,6 +50,7 @@
 (define (instruction-interpret inst reg)
   (match inst
     ; TOOD: match constants
+    [(l/register idx) (list-ref reg idx)]
     [(l/map a b) (map a (instruction-interpret b reg))]
     [(l/filter a b) (filter a (instruction-interpret b reg))]
     [_ inst]
