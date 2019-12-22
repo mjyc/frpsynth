@@ -255,7 +255,7 @@
         (list (l/mapTo 1 (l/register 0))
           (l/mapTo -1 (l/register 1))
           (l/merge (l/register 2) (l/register 3))
-          ; (l/scan + 0 (l/register 4))
+          (l/scan + 0 (l/register 4))
           )))
     ; (displayln (list "spec" spec))
     (define sketch
@@ -272,7 +272,7 @@
         ))
     ; (displayln (list "inputs" inputs))
     ; (displayln "(s/program-interpret spec inputs):")
-    (displayln (s/program-interpret spec inputs))
+    ; (displayln (s/program-interpret spec inputs))
 
     (define M
       (solve
@@ -284,11 +284,61 @@
       )
     (check-true (sat? M))
     (define result (evaluate sketch M))
-    (displayln "angexe result:")
-    (displayln (s/program->string result))
+    ; (displayln "angexe result:")
+    ; (displayln (s/program->string result))
     (check-equal?
       (s/program-interpret result inputs)
-      (list (s/event 20 1) (s/event 40 -1) (s/event 60 1) (s/event 80 -1)))
+      (list (s/event 0 0) (s/event 20 1) (s/event 40 0) (s/event 60 1) (s/event 80 0)))
+    )
+  )
+
+; WIP
+(define (test-synth)
+  (test-case
+    "test-synth"
+    (define numinputs 2)
+    (define spec
+      (l/program
+        numinputs
+        (list (l/mapTo 1 (l/register 0))
+          (l/mapTo -1 (l/register 1))
+          (l/merge (l/register 2) (l/register 3))
+          (l/scan + 0 (l/register 4))
+          )))
+    ; (displayln (list "spec" spec))
+    (define sketch
+      (l/program
+        numinputs
+        (build-list (length (l/program-instructions spec))
+          (lambda (x) (??instruction)))
+        ))
+    ; (displayln (list "sketch" sketch))
+    (define sym-inputs
+      (list
+        (s/??stream (lambda () #t) numinputs)
+        (s/??stream (lambda () #f) numinputs)))
+
+    ; (displayln (list "sketch" sketch))
+    (define M
+      (synthesize
+        #:forall (symbolics sym-inputs)
+        #:guarantee (assert (equal?
+          (s/program-interpret spec sym-inputs)
+          (s/program-interpret sketch sym-inputs)
+          )))
+      )
+    (check-true (sat? M))
+    (define result (evaluate sketch M))
+    ; (displayln "synthe result:")
+    ; (displayln (s/program->string result))
+    (define test-inputs
+      (list
+        (list (s/event 20 #t) (s/event 60 #t))
+        (list (s/event 40 #f) (s/event 80 #f))
+        ))
+    (check-equal?
+      (s/program-interpret result test-inputs)
+      (list (s/event 0 0) (s/event 20 1) (s/event 40 0) (s/event 60 1) (s/event 80 0)))
     )
   )
 
@@ -305,6 +355,7 @@
     (test-program-interpret)
     (test-solve)
     (test-angexe)
+    ; (test-synth)
     )
   (run-tests tvpair-tests)
   )

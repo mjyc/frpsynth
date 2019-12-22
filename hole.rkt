@@ -42,6 +42,6 @@
   (choose*
     (??binfactory)
     (??unoperator)
-    ; (??binoperator)
+    (??binoperator)
     )
   )

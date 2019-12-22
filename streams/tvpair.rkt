@@ -42,16 +42,24 @@
 
 ; emits 'seed' value at timestamp 0
 (define (scan accumulator seed stream)
-  (define init (list (event 0 seed)))
-  (define folded (for/fold ([acc init]) ([evt stream])
-    (cons
-      (event
-        (event-stamp evt)
-        (accumulator (event-value evt) (event-value (first acc)))
-        )
-      acc)
-    ))
-  (reverse folded)
+  (define (rec in out)
+    (match in
+      [(cons x xs)
+       (rec
+         xs
+         (cons
+           (event
+             (event-stamp x)
+             (accumulator (event-value x) (event-value (first out)))
+             )
+           out
+           )
+         )
+       ]
+      ['() out]
+      )
+    )
+  (reverse (rec stream (list (event 0 seed))))
   )
 
 (define (merge stream1 stream2)
@@ -176,6 +184,20 @@
     )
   ; (displayln (list "output" output))
   output
+  )
+
+
+; Holes
+
+; WIP
+(define (??stream create-event length)
+  (for/list ([i length])
+    (define-symbolic* sb boolean?)
+    ; (if sb
+    (create-event)
+      ; noevent
+      ; )
+      )
   )
 
 
