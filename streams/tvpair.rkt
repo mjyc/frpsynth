@@ -40,6 +40,7 @@
   (r/filter wrapped stream)
   )
 
+; emits 'seed' value at timestamp 0
 (define (scan accumulator seed stream)
   (define init (list (event 0 seed)))
   (define folded (for/fold ([acc init]) ([evt stream])

@@ -195,27 +195,21 @@
       (l/program
         numinputs2
         (list
-          (l/scan + 0 (l/register 1))
-          ; (l/mapTo 1 (l/register 0))
-          ; (l/mapTo -1 (l/register 1))
-          ; (l/merge (l/register 2) (l/register 3))
-          ; (l/scan + 0 (l/register 4))
+          (l/mapTo 1 (l/register 0))
+          (l/mapTo -1 (l/register 1))
+          (l/merge (l/register 2) (l/register 3))
+          (l/scan + 0 (l/register 4))
           )))
     (define inputs2
       (list
         (list (s/event 20 #t) (s/event 60 #t))
-        ; (list (s/event 20 #f) (s/event 80 #f))
-        (list (s/event 20 1) (s/event 80 2))
+        (list (s/event 20 #f) (s/event 80 #f))
         ))
 
-    ; (displayln "(s/program-interpret prog2 inputs2)")
-    ; (displayln (s/program-interpret prog2 inputs2))
-    (s/program-interpret prog2 inputs2)
-    (check-true #t)
-    ; (check-equal?
-    ;   (s/program-interpret prog2 inputs2)
-    ;   (list (s/event 20 1) (s/event 60 1))
-    ;   )
+    (check-equal?
+      (s/program-interpret prog2 inputs2)
+      (list (s/event 20 1) (s/event 60 1))
+      )
     )
   )
 
