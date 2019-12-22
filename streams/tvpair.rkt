@@ -2,7 +2,10 @@
 
 (provide (all-defined-out))
 
-(require (prefix-in r/ (only-in rosette/base/base map filter))
+(require
+ (only-in racket/string string-join) ; don't use with sym-vars
+ (prefix-in r/ (only-in rosette/base/base map filter))
+ (only-in rosette/base/core/safe argument-error)
  rosette/lib/angelic rosette/lib/match
  (prefix-in l/ "../lang.rkt")
  "../lib.rkt")
@@ -22,11 +25,36 @@
   (r/map wrapped stream)
   )
 
+(define (mapTo val stream)
+  (define (wrapped evt)
+    (event (event-stamp evt) val)
+    )
+  (r/map wrapped stream)
+  )
+
 (define (filter predicate stream)
   (define (wrapped evt)
     (predicate (event-value evt))
     )
   (r/filter wrapped stream)
+  )
+
+(define (scan accumulator seed stream)
+  '()
+  )
+
+(define (merge stream1 stream2)
+  (displayln "(sort (append stream1 stream2))")
+  (displayln (sort (append stream1 stream2) (lambda (a b)
+    (< (event-stamp a) (event-stamp b))
+    )))
+  ; (define (wrapped evt)
+  ;   (event (event-stamp evt) val)
+  ;   )
+  ; (r/map wrapped stream)
+  (sort (append stream1 stream2) (lambda (a b)
+    (< (event-stamp a) (event-stamp b))
+    ))
   )
 
 ; implements 'ap'; see https://github.com/rpominov/basic-streams#ap
@@ -81,12 +109,48 @@
   )
 
 
-; Syntax
+; Interpreters
 
-(define (instruction-interpret inst)
+(define (instruction-interpret inst regs)
+  ; (displayln (list "inst" inst))
+  ; (displayln (list "regs" regs))
   (match inst
-    [(l/map a b) (map a (instruction-interpret b))]
-    [(l/filter a b) (filter a (instruction-interpret b))]
+    ; TODO: match constants
+    [(l/register idx) (list-ref regs idx)]
+    [(l/map a b) (map a (instruction-interpret b regs))]
+    [(l/mapTo a b) (mapTo a (instruction-interpret b regs))]
+    [(l/filter a b) (filter a (instruction-interpret b regs))]
+    [(l/scan a b c) (scan a b (instruction-interpret c regs))]
+    [(l/merge a b) (merge
+      (instruction-interpret a regs) (instruction-interpret b regs))]
     [_ inst]
     )
+  )
+
+; TODO: take it out?
+(define (program-interpret prog inputs)
+  ; (displayln (list "prog" prog))
+  ; (displayln (list "inputs" inputs))
+  (unless (= (l/program-numinputs prog) (length inputs))
+    (argument-error 'program-interpret "expected ~a inputs, given ~a" (l/program-numinputs prog) inputs))
+  (define (exec insts regs)
+    (cond
+      [(null? insts) regs]
+      [else
+        (exec
+          (rest insts)
+          (append regs (list (instruction-interpret (first insts) regs)))
+          )
+        ]
+      ))
+  (define regs
+    (exec (l/program-instructions prog) inputs))
+  ; (displayln (list "regs" regs))
+  (define output
+    (if (or (empty? regs) (= (length regs) (length inputs)))
+      '()
+      (first (reverse regs)))
+    )
+  ; (displayln (list "output" output))
+  output
   )
