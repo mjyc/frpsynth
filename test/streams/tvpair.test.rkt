@@ -56,6 +56,13 @@
     (check-equal?
       (s/ap (list (s/event 1 add1)) (list (s/event 0 0)))
       (list (s/event 1 1)))
+    ; test input streams with single event, same timestamps
+    (check-equal?
+      (s/ap (list (s/event 0 add1)) (list (s/event 0 0)))
+      (list (s/event 0 1)))
+    (check-equal?
+      (s/ap (list (s/event 1 add1)) (list (s/event 1 0)))
+      (list (s/event 1 1)))
     ; test input streams with two events, varying timestamps
     (check-equal?
       (s/ap
@@ -84,6 +91,63 @@
         (list (s/event 0 0) (s/event 2 1))
         )
       (list (s/event 1 1) (s/event 2 2) (s/event 3 0))
+      )
+    ; test input streams with two events, same timestamps
+    (check-equal?
+      (s/ap
+        (list (s/event 1 add1) (s/event 2 sub1))
+        (list (s/event 1 0))
+        )
+      (list (s/event 1 1) (s/event 2 -1))
+      )
+    (check-equal?
+      (s/ap
+        (list (s/event 1 add1))
+        (list (s/event 1 0) (s/event 2 1))
+        )
+      (list (s/event 1 1) (s/event 2 2))
+      )
+    (check-equal?
+      (s/ap
+        (list (s/event 1 add1) (s/event 2 sub1))
+        (list (s/event 1 0) (s/event 3 1))
+        )
+      (list (s/event 1 1) (s/event 2 -1) (s/event 3 0))
+      )
+    (check-equal?
+      (s/ap
+        (list (s/event 1 add1) (s/event 3 sub1))
+        (list (s/event 1 0) (s/event 2 1))
+        )
+      (list (s/event 1 1) (s/event 2 2) (s/event 3 0))
+      )
+    (check-equal?
+      (s/ap
+        (list (s/event 1 add1) (s/event 2 sub1))
+        (list (s/event 1 0) (s/event 2 1))
+        )
+      (list (s/event 1 1) (s/event 2 0))
+      )
+    (check-equal?
+      (s/ap
+        (list (s/event 1 add1) (s/event 2 sub1) (s/event 3 add1))
+        (list (s/event 1 0) (s/event 2 1))
+        )
+      (list (s/event 1 1) (s/event 2 0) (s/event 3 2))
+      )
+    (check-equal?
+      (s/ap
+        (list (s/event 1 add1) (s/event 2 sub1))
+        (list (s/event 1 0) (s/event 2 1) (s/event 3 2))
+        )
+      (list (s/event 1 1) (s/event 2 0) (s/event 3 1))
+      )
+    (check-equal?
+      (s/ap
+        (list (s/event 1 add1) (s/event 2 sub1) (s/event 3 identity))
+        (list (s/event 1 0) (s/event 2 1) (s/event 3 2))
+        )
+      (list (s/event 1 1) (s/event 2 0) (s/event 3 2))
       )
     )
   )

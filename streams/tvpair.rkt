@@ -67,13 +67,33 @@
     [(list '() (cons (event tsv valv) sv))
      (ap-rec '() sv tsv lastf valv sr)]
     [(list (cons (event tsf valf) sf) (cons (event tsv valv) sv))
-     ; when tied assumes first stream has a lower stamp
+     ; when tied, use tsf, which is same as tsv
      (ap-rec
-      (if (<= tsf tsv) sf streamf)
-      (if (<= tsf tsv) streamv sv)
-      (if (<= tsf tsv) tsf tsv)
-      (if (<= tsf tsv) valf lastf)
-      (if (<= tsf tsv) lastv valv)
+      (cond
+        [(= tsf tsv) sf]
+        [(< tsf tsv) sf]
+        [else streamf]
+        )
+      (cond
+        [(= tsf tsv) sv]
+        [(< tsf tsv) streamv]
+        [else sv]
+        )
+      (cond
+        [(= tsf tsv) tsf]
+        [(< tsf tsv) tsf]
+        [else tsv]
+        )
+      (cond
+        [(= tsf tsv) valf]
+        [(< tsf tsv) valf]
+        [else lastf]
+        )
+      (cond
+        [(= tsf tsv) valv]
+        [(< tsf tsv) lastv]
+        [else valv]
+        )
       sr)
      ]
     )
@@ -85,8 +105,8 @@
     [(list '() (list a ...)) '()]
     [(list (list a ...) '()) '()]
     [(list (cons (event tsf valf) sf) (cons (event tsv valv) sv))
-     ; when tied, assumes first stream has a lower stamp
-     (define ts (if (> tsf tsv) tsf tsv))
+     ; when tied, use tsf, which is same as tsv
+     (define ts (if (>= tsf tsv) tsf tsv))
      (reverse (ap-rec sf sv ts valf valv '()))
      ]
     )
