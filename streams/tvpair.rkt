@@ -40,7 +40,7 @@
   (r/filter wrapped stream)
   )
 
-; emits 'seed' value at timestamp 0
+; does not emit 'seed' value at timestamp 0
 (define (scan accumulator seed stream)
   (define (rec in out)
     (match in
@@ -59,7 +59,7 @@
       ['() out]
       )
     )
-  (reverse (rec stream (list (event 0 seed))))
+  (cdr (reverse (rec stream (list (event 0 seed)))))
   )
 
 (define (merge stream1 stream2)
@@ -189,15 +189,18 @@
 
 ; Holes
 
-; WIP
-(define (??stream create-event length)
-  (for/list ([i length])
-    (define-symbolic* sb boolean?)
-    ; (if sb
-    (create-event)
-      ; noevent
-      ; )
+(define (??stream create-event-value length)
+  (define interval 20)
+  (filter
+    event?
+    (for/list ([i length])
+      (define-symbolic* sb boolean?)
+      (if sb
+        (event (* i interval) (create-event-value))
+        '()
+        )
       )
+    )
   )
 
 

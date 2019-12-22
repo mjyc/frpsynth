@@ -210,7 +210,7 @@
 
     (check-equal?
       (s/program-interpret prog2 inputs2)
-      (list (s/event 0 0) (s/event 20 1) (s/event 40 0) (s/event 60 1) (s/event 80 0))
+      (list (s/event 20 1) (s/event 40 0) (s/event 60 1) (s/event 80 0))
       )
     )
   )
@@ -288,7 +288,7 @@
     ; (displayln (s/program->string result))
     (check-equal?
       (s/program-interpret result inputs)
-      (list (s/event 0 0) (s/event 20 1) (s/event 40 0) (s/event 60 1) (s/event 80 0)))
+      (list (s/event 20 1) (s/event 40 0) (s/event 60 1) (s/event 80 0)))
     )
   )
 
@@ -313,12 +313,12 @@
           (lambda (x) (??instruction)))
         ))
     ; (displayln (list "sketch" sketch))
+    (define len 5)
     (define sym-inputs
       (list
-        (s/??stream (lambda () #t) numinputs)
-        (s/??stream (lambda () #f) numinputs)))
+        (s/??stream (lambda () #t) len)
+        (s/??stream (lambda () #f) len)))
 
-    ; (displayln (list "sketch" sketch))
     (define M
       (synthesize
         #:forall (symbolics sym-inputs)
@@ -329,8 +329,8 @@
       )
     (check-true (sat? M))
     (define result (evaluate sketch M))
-    ; (displayln "synthe result:")
-    ; (displayln (s/program->string result))
+    (displayln "synthe result:")
+    (displayln (s/program->string result))
     (define test-inputs
       (list
         (list (s/event 20 #t) (s/event 60 #t))

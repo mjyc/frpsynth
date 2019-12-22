@@ -221,12 +221,12 @@
           (lambda (x) (??instruction)))
         ))
     ; (displayln (list "sketch" sketch))
+    (define len 4)
     (define sym-inputs
       (list
-        (s/??stream (lambda () #t) numinputs)
-        (s/??stream (lambda () #f) numinputs)))
+        (s/??stream (lambda () #t) len)
+        (s/??stream (lambda () #f) len)))
 
-    ; (displayln (list "sketch" sketch))
     (define M
       (synthesize
         #:forall (symbolics sym-inputs)
