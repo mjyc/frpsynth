@@ -193,17 +193,11 @@
             (s/program-interpret sketch inputs)
             )))
       )
-    ; (cond
-    ;   [(sat? M)
-    ;     (define result (evaluate sketch M))
-    ;     (displayln "angexe result:")
-    ;     (displayln (s/program->string result))
-    ;     (displayln "angexe (s/program-interpret result inputs):")
-    ;     (displayln (s/program-interpret result inputs))
-    ;     ]
-    ;   [else (displayln "No program found")]
-    ;   )
     (check-true (sat? M))
+    (define result (evaluate sketch M))
+    ; (displayln "angexe result:")
+    ; (displayln (s/program->string result))
+    (check-equal? (s/program-interpret result inputs) (list 1 0 1 0))
     )
   )
 
@@ -241,15 +235,18 @@
           (s/program-interpret sketch sym-inputs)
           )))
       )
-    ; (cond
-    ;   [(sat? M)
-    ;     (define result (evaluate sketch M))
-    ;     (displayln "synth result:")
-    ;     (displayln (s/program->string result))
-    ;     ]
-    ;   [else (displayln "No program found")]
-    ;   )
     (check-true (sat? M))
+    (define result (evaluate sketch M))
+    ; (displayln "synthe result:")
+    ; (displayln (s/program->string result))
+    (define test-inputs
+      (list
+        (list #t s/noevent #t s/noevent)
+        (list s/noevent #f s/noevent #f)
+        ))
+    (check-equal?
+      (s/program-interpret result test-inputs)
+      (list 1 0 1 0))
     )
   )
 
