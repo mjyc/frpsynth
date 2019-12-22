@@ -140,7 +140,6 @@
   )
 
 
-; TODO: consider refactoring it
 ; Interpreters
 
 (define (instruction-interpret inst regs)
@@ -187,7 +186,6 @@
   )
 
 
-; TODO: consider refactoring it
 ; Utils
 
 (define (instruction->string instruction [mode "rkt"])
