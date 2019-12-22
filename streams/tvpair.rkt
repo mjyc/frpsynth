@@ -3,6 +3,7 @@
 (provide (all-defined-out))
 
 (require
+ (only-in racket/base for/fold)
  (only-in racket/string string-join) ; don't use with sym-vars
  (prefix-in r/ (only-in rosette/base/base map filter))
  (only-in rosette/base/core/safe argument-error)
@@ -40,18 +41,19 @@
   )
 
 (define (scan accumulator seed stream)
-  '()
+  (define init (list (event 0 seed)))
+  (define folded (for/fold ([acc init]) ([evt stream])
+    (cons
+      (event
+        (event-stamp evt)
+        (accumulator (event-value evt) (event-value (first acc)))
+        )
+      acc)
+    ))
+  (reverse folded)
   )
 
 (define (merge stream1 stream2)
-  (displayln "(sort (append stream1 stream2))")
-  (displayln (sort (append stream1 stream2) (lambda (a b)
-    (< (event-stamp a) (event-stamp b))
-    )))
-  ; (define (wrapped evt)
-  ;   (event (event-stamp evt) val)
-  ;   )
-  ; (r/map wrapped stream)
   (sort (append stream1 stream2) (lambda (a b)
     (< (event-stamp a) (event-stamp b))
     ))
