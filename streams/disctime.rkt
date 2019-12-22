@@ -3,13 +3,13 @@
 (provide (all-defined-out))
 
 (require
- (only-in racket/base build-list for/list)
- (only-in racket/string string-join) ; don't use with sym-vars
- (prefix-in r/ (only-in rosette/base/base map filter))
- (only-in rosette/base/core/safe argument-error)
- rosette/lib/angelic rosette/lib/match
- (prefix-in l/ "../lang.rkt")
- "../lib.rkt")
+  (only-in racket/base build-list for/list)
+  (only-in racket/string string-join) ; don't use with sym-vars
+  rosette/lib/angelic rosette/lib/match
+  (only-in rosette/base/core/safe argument-error)
+  (prefix-in r/ (only-in rosette/base/base map filter))
+  (prefix-in l/ "../lang.rkt")
+  "../lib.rkt")
 
 
 ; Data types
@@ -132,59 +132,4 @@
       noevent
       )
     )
-  )
-
-
-; Utils
-
-(define (instruction->string instruction [mode "rkt"])
-  (match mode
-    ["rkt" (match instruction
-      [(l/register idx) (format "r~a" idx)]
-      [(l/map a b)
-        (format "(map ~a ~a)" a (instruction->string b))]
-      [(l/mapTo a b)
-        (format "(mapTo ~a ~a)" a (instruction->string b))]
-      [(l/filter a b)
-        (format "(filter ~a ~a)" a (instruction->string b))]
-      [(l/scan a b c)
-        (format "(scan ~a ~a ~a)" a b (instruction->string c))]
-      [(l/merge a b)
-        (format "(merge ~a ~a)"
-          (instruction->string a)
-          (instruction->string b)
-          )]
-      [_ (format "~a" instruction)]
-      )]
-    ["js" (match instruction
-      [(l/register idx) (format "stream~a" idx)]
-      [(l/map a b)
-        (format "map(~a, ~a)" a (instruction->string b))]
-      [(l/mapTo a b)
-        (format "mapTo(~a, ~a)" a (instruction->string b))]
-      [(l/filter a b)
-        (format "filter(~a, ~a)" a (instruction->string b))]
-      [(l/scan a b c)
-        (format "scan(~a, ~a, ~a)" a b (instruction->string c))]
-      [(l/merge a b)
-        (format "merge(~a, ~a)"
-          (instruction->string a)
-          (instruction->string b)
-          )]
-      [_ (format "~a" instruction)]
-      )]
-    [_ (argument-error 'program->string "unknown mode ~a" mode)]
-    )
-  )
-
-(define (program->string program [mode "rkt"])
-  (define insts (l/program-instructions program))
-  (string-join (for/list ([i (build-list (length insts) identity)])
-    (define inst (list-ref insts i))
-    (match mode
-      ["rkt" (format "(define r~a ~a)\n" (+ i (l/program-numinputs program)) (instruction->string inst mode))]
-      ["js" (format "var stream~a = ~a;\n" i (instruction->string inst mode))]
-      [_ (argument-error 'program->string "unknown mode ~a" mode)]
-      )
-    ) "")
   )

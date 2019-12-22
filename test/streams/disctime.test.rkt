@@ -196,7 +196,7 @@
     (check-true (sat? M))
     (define result (evaluate sketch M))
     ; (displayln "angexe result:")
-    ; (displayln (s/program->string result))
+    ; (displayln (l/program->string result))
     (check-equal? (s/program-interpret result inputs) (list 1 0 1 0))
     )
   )
@@ -237,8 +237,8 @@
       )
     (check-true (sat? M))
     (define result (evaluate sketch M))
-    ; (displayln "synthe result:")
-    ; (displayln (s/program->string result))
+    (displayln "synthe result:")
+    (displayln (l/program->string result))
     (define test-inputs
       (list
         (list #t s/noevent #t s/noevent)

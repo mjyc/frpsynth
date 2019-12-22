@@ -285,7 +285,7 @@
     (check-true (sat? M))
     (define result (evaluate sketch M))
     ; (displayln "angexe result:")
-    ; (displayln (s/program->string result))
+    ; (displayln (l/program->string result))
     (check-equal?
       (s/program-interpret result inputs)
       (list (s/event 20 1) (s/event 40 0) (s/event 60 1) (s/event 80 0)))
