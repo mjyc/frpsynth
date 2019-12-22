@@ -174,21 +174,21 @@
 (define (test-program-interpret)
   (test-case
     "test-program-interpret"
-    ; (define numinputs 1)
-    ; (define prog
-    ;   (l/program
-    ;     numinputs
-    ;     (list
-    ;       (l/map add1 (l/register 0))
-    ;       (l/filter odd? (l/register 1))
-    ;       )))
-    ; (define inputs (list
-    ;   (list (s/event 20 0) (s/event 40 1))
-    ;   ))
-    ; (define output (s/program-interpret prog inputs))
-    ; ; (displayln "output:")
-    ; ; (displayln output)
-    ; (check-equal? output (list (s/event 20 1)))
+    (define numinputs 1)
+    (define prog
+      (l/program
+        numinputs
+        (list
+          (l/map add1 (l/register 0))
+          (l/filter odd? (l/register 1))
+          )))
+    (define inputs (list
+      (list (s/event 20 0) (s/event 40 1))
+      ))
+    (define output (s/program-interpret prog inputs))
+    ; (displayln "output:")
+    ; (displayln output)
+    (check-equal? output (list (s/event 20 1)))
 
     (define numinputs2 2)
     (define prog2
@@ -203,12 +203,12 @@
     (define inputs2
       (list
         (list (s/event 20 #t) (s/event 60 #t))
-        (list (s/event 20 #f) (s/event 80 #f))
+        (list (s/event 40 #f) (s/event 80 #f))
         ))
 
     (check-equal?
       (s/program-interpret prog2 inputs2)
-      (list (s/event 20 1) (s/event 60 1))
+      (list (s/event 0 0) (s/event 20 1) (s/event 40 0) (s/event 60 1) (s/event 80 0))
       )
     )
   )
@@ -227,6 +227,17 @@
       (assert (equal? (s/instruction-interpret inst '()) (list (s/event 0 2))))))
     (check-true (sat? sol))
     (check-equal? (evaluate (list x y) sol) (list 0 1))
+
+    (define inst2
+      (if b
+        (l/map add1 (list (s/event x y)))
+        (l/filter odd? (list (s/event x y)))
+        )
+      )
+    (define sol2 (solve
+      (assert (equal? (s/instruction-interpret inst2 '()) (list (s/event 0 2))))))
+    (check-true (sat? sol2))
+    (check-equal? (evaluate (list b x y) sol2) (list #t 0 1))
     )
   )
 
@@ -235,16 +246,7 @@
 (define (test-angexe)
   (test-case
     "test-angexe"
-    (define inst
-      (if b
-        (l/map add1 (list (s/event x y)))
-        (l/filter odd? (list (s/event x y)))
-        )
-      )
-    (define sol (solve
-      (assert (equal? (s/instruction-interpret inst '()) (list (s/event 0 2))))))
-    (check-true (sat? sol))
-    (check-equal? (evaluate (list b x y) sol) (list #t 0 1))
+    (check-true #t)
     )
   )
 
@@ -259,7 +261,7 @@
     (test-ap)
     (test-from-diagram)
     (test-program-interpret)
-    ; (test-solve)
+    (test-solve)
     ; (test-angexe)
     )
   (run-tests tvpair-tests)
