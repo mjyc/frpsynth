@@ -6,7 +6,8 @@
   (only-in racket/base build-list for/list)
   (only-in racket/string string-join) ; don't use with sym-vars
   rosette/lib/match
-  (only-in rosette/base/core/safe argument-error))
+  (only-in rosette/base/core/safe argument-error)
+  )
 
 
 ; Data types

@@ -237,8 +237,8 @@
       )
     (check-true (sat? M))
     (define result (evaluate sketch M))
-    (displayln "synthe result:")
-    (displayln (l/program->string result))
+    ; (displayln "synthe result:")
+    ; (displayln (l/program->string result))
     (define test-inputs
       (list
         (list #t s/noevent #t s/noevent)
