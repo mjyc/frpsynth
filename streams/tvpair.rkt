@@ -187,23 +187,6 @@
   )
 
 
-; Holes
-
-(define (??stream create-event-value length)
-  (define interval 20)
-  (filter
-    event?
-    (for/list ([i length])
-      (define-symbolic* sb boolean?)
-      (if sb
-        (event (* i interval) (create-event-value))
-        '()
-        )
-      )
-    )
-  )
-
-
 ; TODO: consider refactoring it
 ; Utils
 
