@@ -1,8 +1,10 @@
 #lang rosette/safe
 
 (require rackunit rackunit/text-ui
+ (only-in racket/base build-list)
  (prefix-in s/ "../../streams/tvpair.rkt")
- (prefix-in l/ "../../lang.rkt"))
+ (prefix-in l/ "../../lang.rkt")
+ "../../hole.rkt")
 
 (provide (all-defined-out))
 
@@ -246,7 +248,47 @@
 (define (test-angexe)
   (test-case
     "test-angexe"
-    (check-true #t)
+    (define numinputs 2)
+    (define spec
+      (l/program
+        numinputs
+        (list (l/mapTo 1 (l/register 0))
+          (l/mapTo -1 (l/register 1))
+          (l/merge (l/register 2) (l/register 3))
+          ; (l/scan + 0 (l/register 4))
+          )))
+    ; (displayln (list "spec" spec))
+    (define sketch
+      (l/program
+        numinputs
+        (build-list (length (l/program-instructions spec))
+          (lambda (x) (??instruction)))
+        ))
+    ; (displayln (list "sketch" sketch))
+    (define inputs
+      (list
+        (list (s/event 20 #t) (s/event 60 #t))
+        (list (s/event 40 #f) (s/event 80 #f))
+        ))
+    ; (displayln (list "inputs" inputs))
+    ; (displayln "(s/program-interpret spec inputs):")
+    (displayln (s/program-interpret spec inputs))
+
+    (define M
+      (solve
+        (assert
+          (equal?
+            (s/program-interpret spec inputs)
+            (s/program-interpret sketch inputs)
+            )))
+      )
+    (check-true (sat? M))
+    (define result (evaluate sketch M))
+    (displayln "angexe result:")
+    (displayln (s/program->string result))
+    (check-equal?
+      (s/program-interpret result inputs)
+      (list (s/event 20 1) (s/event 40 -1) (s/event 60 1) (s/event 80 -1)))
     )
   )
 
@@ -262,7 +304,7 @@
     (test-from-diagram)
     (test-program-interpret)
     (test-solve)
-    ; (test-angexe)
+    (test-angexe)
     )
   (run-tests tvpair-tests)
   )
