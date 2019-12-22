@@ -168,19 +168,23 @@
           (l/merge (l/register 2) (l/register 3))
           (l/scan + 0 (l/register 4))
           )))
-    ; (displayln "spec" spec)
+    ; (displayln (list "spec" spec))
     (define sketch
       (l/program
         numinputs
         (build-list (length (l/program-instructions spec))
           (lambda (x) (??instruction)))
         ))
+    ; (displayln (list "sketch" sketch))
     (define inputs
       (list
         (list #t s/noevent #t s/noevent)
         (list s/noevent #f s/noevent #f)
         ))
-    ; (displayln "sketch" sketch)
+    ; (displayln (list "inputs" inputs))
+    ; (displayln "(s/program-interpret spec inputs):")
+    ; (displayln (s/program-interpret spec inputs))
+
     (define M
       (solve
         (assert
@@ -194,6 +198,8 @@
     ;     (define result (evaluate sketch M))
     ;     (displayln "angexe result:")
     ;     (displayln (s/program->string result))
+    ;     (displayln "angexe (s/program-interpret result inputs):")
+    ;     (displayln (s/program-interpret result inputs))
     ;     ]
     ;   [else (displayln "No program found")]
     ;   )
@@ -213,19 +219,20 @@
           (l/merge (l/register 2) (l/register 3))
           (l/scan + 0 (l/register 4))
           )))
-    ; (displayln "spec" spec)
+    ; (displayln (list "spec" spec))
     (define sketch
       (l/program
         numinputs
         (build-list (length (l/program-instructions spec))
           (lambda (x) (??instruction)))
         ))
+    ; (displayln (list "sketch" sketch))
     (define sym-inputs
       (list
         (s/??stream (lambda () #t) numinputs)
         (s/??stream (lambda () #f) numinputs)))
 
-    ; (displayln "sketch" sketch)
+    ; (displayln (list "sketch" sketch))
     (define M
       (synthesize
         #:forall (symbolics sym-inputs)
