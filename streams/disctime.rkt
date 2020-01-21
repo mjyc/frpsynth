@@ -9,7 +9,8 @@
   (only-in rosette/base/core/safe argument-error)
   (prefix-in r/ (only-in rosette/base/base map filter))
   (prefix-in l/ "../lang.rkt")
-  "../lib.rkt")
+  "../lib.rkt"
+  )
 
 
 ; Data types
