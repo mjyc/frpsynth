@@ -48,6 +48,16 @@
     )
   )
 
+(define (test-delay)
+  (test-case
+    "test-delay"
+    (check-equal?
+      (s/delay 2 (list 1 2 3))
+      (list s/noevent s/noevent 1)
+      )
+    )
+  )
+
 
 ; Test sources
 
@@ -255,15 +265,16 @@
 
 (module+ test
   (define/provide-test-suite disctime-tests
-    (test-noevent)
-    (test-map)
-    (test-filter)
-    (test-from-diagram)
-    (test-instruction-interpret)
-    (test-program-interpret)
-    (test-solve)
-    (test-angexe)
-    (test-synth)
+    ; (test-noevent)
+    ; (test-map)
+    ; (test-filter)
+    (test-delay)
+    ; (test-from-diagram)
+    ; (test-instruction-interpret)
+    ; (test-program-interpret)
+    ; (test-solve)
+    ; (test-angexe)
+    ; (test-synth)
     )
   (run-tests disctime-tests)
   )

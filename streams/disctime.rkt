@@ -3,7 +3,8 @@
 (provide (all-defined-out))
 
 (require
-  (only-in racket/base build-list for/list)
+  (only-in racket/base for/list)
+  (only-in racket/list make-list)
   (only-in racket/string string-join) ; don't use with sym-vars
   rosette/lib/angelic rosette/lib/match
   (only-in rosette/base/core/safe argument-error)
@@ -58,6 +59,13 @@
   (r/map
     (lambda (a b) (if (noevent? b) a b))
     stream1 stream2)
+  )
+
+; TODO: define period clearly
+(define (delay period stream)
+  (append
+    (make-list period noevent)
+    (reverse (drop (reverse stream) period)))
   )
 
 
