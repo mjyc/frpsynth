@@ -21,6 +21,7 @@
 ; shortcuts
 (define nevt '())
 (define nevt? null?)
+(define (evt? val) (not (null? val)))
 
 
 ; Operators
