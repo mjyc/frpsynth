@@ -4,7 +4,7 @@
 
 (require
   (only-in racket/base for/list)
-  (only-in racket/list make-list)
+  (only-in racket/list make-list) ; don't use with sym-vars
   (only-in racket/string string-join) ; don't use with sym-vars
   rosette/lib/angelic rosette/lib/match
   (only-in rosette/base/core/safe argument-error)
@@ -61,18 +61,70 @@
     stream1 stream2)
   )
 
-; TODO: define period clearly
-(define (delay period stream)
-  (append
-    (make-list period noevent)
-    (reverse (drop (reverse stream) period)))
+(define (make-buffer n lst)
+  (if (equal? n 0)
+    lst
+    (cons noevent (make-buffer (- n 1) lst))
+    )
   )
+
+; TODOs
+; - define the length of 1 period
+; - handle period < 1
+; (define (delay period stream)
+;   (define buffer (make-buffer period '()))
+;   ; (displayln (list "buffer" buffer))
+;   (define out (append
+;       ; (make-list period noevent)
+;       buffer
+;       (reverse (drop (reverse stream) period))))
+;   ; (displayln (list "out" out))
+;   out
+;   )
+
+(define (delay period stream)
+  (define lst (list
+   (append (list nevt) (reverse (drop (reverse stream) 1)))
+   (append (list nevt nevt) (reverse (drop (reverse stream) 2)))
+   (append (list nevt nevt nevt) (reverse (drop (reverse stream) 3)))
+   (append (list nevt nevt nevt nevt) (reverse (drop (reverse stream) 4)))
+   (append (list nevt nevt nevt nevt nevt) (reverse (drop (reverse stream) 5)))
+   ))
+  (list-ref lst period)
+  ; (displayln (list "period" period "stream" stream))
+  ; (define out (match period
+  ;   [1
+  ;     (append (list nevt) (reverse (drop (reverse stream) period)))
+  ;     ]
+  ;   [2
+  ;     (append (list nevt nevt) (reverse (drop (reverse stream) period)))
+  ;     ]
+  ;   [3
+  ;     (append (list nevt nevt nevt) (reverse (drop (reverse stream) period)))
+  ;     ]
+  ;   [_ stream]
+  ;   ))
+  ; (cond [])
+  ; (displayln (list "out" out))
+  ; out
+  )
+
+; (define (delay period stream)
+;   (define buffer (make-buffer period '()))
+;   ; (displayln (list "buffer" buffer))
+
+;   (define out (append
+;       ; (make-list period noevent)
+;       buffer
+;       (reverse (drop (reverse stream) period))))
+;   ; (displayln (list "out" out))
+;   out
+;   )
 
 
 ; Sources
 
 (define (from-diagram diagramString)
-  (define interval 20)
   (define characters (cdr (drop-right (string-split diagramString "") 1)))
   (define (rec chars outstream)
     (match chars

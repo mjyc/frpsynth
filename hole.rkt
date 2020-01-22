@@ -9,6 +9,10 @@
 
 
 ; Symbolic Syntax
+(define (??integer)
+  (define-symbolic* ci integer?)
+  ci
+  )
 
 (define (??constant)
   (define-symbolic* ci integer?)
