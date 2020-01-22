@@ -9,6 +9,7 @@
 
 
 ; Symbolic Syntax
+
 (define (??integer)
   (define-symbolic* ci integer?)
   ci
