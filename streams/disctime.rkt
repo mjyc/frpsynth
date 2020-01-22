@@ -3,7 +3,7 @@
 (provide (all-defined-out))
 
 (require
-  (only-in racket/base for/list)
+  (only-in racket/base for/list string->number) ; don't use with sym-vars
   (only-in racket/list make-list) ; don't use with sym-vars
   (only-in racket/string string-join) ; don't use with sym-vars
   rosette/lib/angelic rosette/lib/match
@@ -84,13 +84,21 @@
 
 ; Sources
 
-; TODO: define the length of 1 period
+; TODO:
+; - define the length of 1 period
+; - support 2nd argument "values"; see https://github.com/cyclejs/cyclejs/blob/master/time/src/diagram.ts
 (define (from-diagram diagramString)
   (define characters (cdr (drop-right (string-split diagramString "") 1)))
   (define (rec chars outstream)
     (match chars
       [(cons "-" xs) (rec xs (cons nevt outstream))]
-      [(cons x xs) (rec xs (cons x outstream))]
+      [(cons "t" xs) (rec xs (cons #t outstream))]
+      [(cons "f" xs) (rec xs (cons #f outstream))]
+      [(cons x xs)
+        (match x
+          [(regexp #rx"[0-9]") (rec xs (cons (string->number x) outstream))]
+          [_ (rec xs (cons x outstream))]
+          )]
       ['() outstream]
       )
     )
