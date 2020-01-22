@@ -16,6 +16,7 @@
 (struct map (a1 a2) #:transparent)
 (struct mapTo (a1 a2) #:transparent)
 (struct filter (a1 a2) #:transparent)
+(struct delay (a1 a2) #:transparent)
 (struct scan (a1 a2 a3) #:transparent)
 (struct merge (a1 a2) #:transparent)
 
@@ -36,6 +37,8 @@
         (format "(mapTo ~a ~a)" a (instruction->string b))]
       [(filter a b)
         (format "(filter ~a ~a)" a (instruction->string b))]
+      [(delay a b)
+        (format "(delay ~a ~a)" a (instruction->string b))]
       [(scan a b c)
         (format "(scan ~a ~a ~a)" a b (instruction->string c))]
       [(merge a b)
@@ -53,6 +56,8 @@
         (format "mapTo(~a, ~a)" a (instruction->string b))]
       [(filter a b)
         (format "filter(~a, ~a)" a (instruction->string b))]
+      [(delay a b)
+        (format "delay(~a, ~a)" a (instruction->string b))]
       [(scan a b c)
         (format "scan(~a, ~a, ~a)" a b (instruction->string c))]
       [(merge a b)
