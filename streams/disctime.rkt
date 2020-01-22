@@ -68,6 +68,18 @@
     (reverse (drop (reverse stream) period)))
   )
 
+(define (delay-lifted period stream)
+  (define out-streams
+    (list
+      (delay 1 stream)
+      (delay 2 stream)
+      (delay 3 stream)
+      (delay 4 stream)
+      (delay 5 stream)
+      ))
+  (list-ref out-streams (- period 1))
+  )
+
 
 ; Sources
 
@@ -96,7 +108,7 @@
     [(l/map a b) (map a (instruction-interpret b regs))]
     [(l/mapTo a b) (mapTo a (instruction-interpret b regs))]
     [(l/filter a b) (filter a (instruction-interpret b regs))]
-    [(l/delay a b) (delay a (instruction-interpret b regs))]
+    [(l/delay a b) (delay-lifted a (instruction-interpret b regs))]
     [(l/scan a b c) (scan a b (instruction-interpret c regs))]
     [(l/merge a b) (merge
       (instruction-interpret a regs) (instruction-interpret b regs))]
