@@ -146,7 +146,6 @@
   ; (displayln (list "inst" inst))
   ; (displayln (list "regs" regs))
   (match inst
-    ; TODO: match constants
     [(l/register idx) (list-ref regs idx)]
     [(l/map a b) (map a (instruction-interpret b regs))]
     [(l/mapTo a b) (mapTo a (instruction-interpret b regs))]
