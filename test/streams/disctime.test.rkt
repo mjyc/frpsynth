@@ -180,7 +180,7 @@
           )))
     ; (displayln (list "spec" spec))
     (define sketch
-      (??program2 numinputs (length (l/program-instructions spec))
+      (??program numinputs (length (l/program-instructions spec))
         (list
           l/merge
           (lambda (x) (l/map add1 x))
@@ -190,7 +190,7 @@
           )
         )
       )
-    (displayln (list "sketch" (l/program->string sketch)))
+    ; (displayln (list "sketch" (l/program->string sketch)))
     (define inputs
       (list
         (list #t s/noevent #t s/noevent)
@@ -230,7 +230,15 @@
           )))
     ; (displayln (list "spec" spec))
     (define sketch
-      (??program numinputs (length (l/program-instructions spec)))
+      (??program numinputs (length (l/program-instructions spec))
+        (list
+          l/merge
+          (lambda (x) (l/map add1 x))
+          (lambda (x) (l/mapTo (??constant) x))
+          (lambda (x) (l/filter odd? x))
+          (lambda (x) (l/scan + 0 x))
+          )
+        )
       )
     ; (displayln (list "sketch" sketch))
     (define len 4)
@@ -267,16 +275,16 @@
 
 (module+ test
   (define/provide-test-suite disctime-tests
-    ; (test-noevent)
-    ; (test-map)
-    ; (test-filter)
-    ; (test-delay)
-    ; (test-from-diagram)
-    ; (test-instruction-interpret)
-    ; (test-program-interpret)
-    ; (test-solve)
+    (test-noevent)
+    (test-map)
+    (test-filter)
+    (test-delay)
+    (test-from-diagram)
+    (test-instruction-interpret)
+    (test-program-interpret)
+    (test-solve)
     (test-angexe)
-    ; (test-synth)
+    (test-synth)
     )
   (run-tests disctime-tests)
   )

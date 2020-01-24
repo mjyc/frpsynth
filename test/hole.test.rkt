@@ -2,19 +2,27 @@
 
 (provide (all-defined-out))
 
-(require
+(require rackunit rackunit/text-ui
   "../hole.rkt"
   (prefix-in l/ "../lang.rkt")
   )
 
-(displayln ??instruction2)
+(define (test-??program)
+  (test-case
+    "test-??program"
+    (define sketch (??program 2 5
+      (list
+        (lambda (x) l/mapTo 1)
+        )
+      ))
+    (check-true (l/program? sketch))
+    (check-equal? (length (l/program-instructions sketch)) 5)
+    )
+  )
 
-(??program2 2 5 (list
-  l/merge
-  (lambda (x) (l/map add1 x))
-  ; (lambda (x) (l/mapTo (??constant) x))
-  (lambda (x) (l/mapTo 1 x))
-  (lambda (x) (l/mapTo -1 x))
-  (lambda (x) (l/filter odd? x))
-  (lambda (x) (l/scan + 0 x))
-  ))
+(module+ test
+  (define/provide-test-suite hole-tests
+    (test-??program)
+    )
+  (run-tests hole-tests)
+  )

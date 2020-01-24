@@ -21,46 +21,7 @@
   (define-symbolic* cb boolean?)
   (choose* ci cb))
 
-(define (??register)
-  (define-symbolic* si integer?)
-  (l/register si))
-
-(define (??binfactory)
-  (choose*
-    (l/merge (??register) (??register)))
-  )
-
-(define (??unoperator)
-  (choose*
-    (l/map add1 (??register))
-    (l/mapTo (??constant) (??register))
-    (l/filter odd? (??register))
-    )
-  )
-
-(define (??binoperator)
-  (choose*
-    (l/scan + 0 (??register))
-    )
-  )
-
-(define (??instruction)
-  (choose*
-    (??binfactory)
-    (??unoperator)
-    (??binoperator)
-    )
-  )
-
-(define (??program numinputs maxnumregs)
-  (l/program
-    numinputs
-    (build-list maxnumregs
-      (lambda (x) (??instruction)))
-    )
-  )
-
-(define (??instruction2 insts [inputs '(#f)])
+(define (??instruction insts [inputs '(#f)])
   (define r1 (apply choose* inputs))
   (define r2 (apply choose* inputs))
   (define r3 (apply choose* inputs))
@@ -78,8 +39,8 @@
     )
   )
 
-(define (??program2 n k insts)
+(define (??program n k insts)
   (l/program
     n
     (for/list ([output (in-range n (+ n k))])
-     (??instruction2 insts (build-list output identity)))))
+     (??instruction insts (build-list output identity)))))
