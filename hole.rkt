@@ -1,6 +1,7 @@
 #lang rosette/safe
 
 (require
+  (only-in racket/base build-list)
   rosette/lib/angelic
   (prefix-in l/ "./lang.rkt")
   )
@@ -48,5 +49,14 @@
     (??binfactory)
     (??unoperator)
     (??binoperator)
+    )
+  )
+
+(define (??program numinputs maxnumregs)
+  (define ret (??integer))
+  (l/program
+    numinputs
+    (build-list maxnumregs
+      (lambda (x) (??instruction)))
     )
   )

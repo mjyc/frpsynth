@@ -1,7 +1,6 @@
 #lang rosette/safe
 
 (require rackunit rackunit/text-ui
- (only-in racket/base build-list)
  (prefix-in s/ "../../streams/disctime.rkt")
  (prefix-in l/ "../../lang.rkt")
  "../../hole.rkt")
@@ -66,10 +65,10 @@
     "test-from-diagram"
     (define outstream1 (s/from-diagram "1234"))
     (define expected1
-      (list "1" "2" "3" "4"))
+      (list 1 2 3 4))
     (check-equal? outstream1 expected1)
     (define outstream2 (s/from-diagram "5--6"))
-    (define expected2 (list "5" s/noevent s/noevent "6"))
+    (define expected2 (list 5 s/noevent s/noevent 6))
     (check-equal? outstream2 expected2)
     )
   )
@@ -180,11 +179,8 @@
           )))
     ; (displayln (list "spec" spec))
     (define sketch
-      (l/program
-        numinputs
-        (build-list (length (l/program-instructions spec))
-          (lambda (x) (??instruction)))
-        ))
+      (??program numinputs (length (l/program-instructions spec)))
+      )
     ; (displayln (list "sketch" sketch))
     (define inputs
       (list
@@ -225,11 +221,8 @@
           )))
     ; (displayln (list "spec" spec))
     (define sketch
-      (l/program
-        numinputs
-        (build-list (length (l/program-instructions spec))
-          (lambda (x) (??instruction)))
-        ))
+      (??program numinputs (length (l/program-instructions spec)))
+      )
     ; (displayln (list "sketch" sketch))
     (define len 4)
     (define sym-inputs
