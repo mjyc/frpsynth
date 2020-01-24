@@ -1,7 +1,7 @@
 #lang rosette/safe
 
 (require
-  (only-in racket/base build-list)
+  (only-in racket/base procedure-arity build-list for/list in-range)
   rosette/lib/angelic
   (prefix-in l/ "./lang.rkt")
   )
@@ -53,10 +53,33 @@
   )
 
 (define (??program numinputs maxnumregs)
-  (define ret (??integer))
   (l/program
     numinputs
     (build-list maxnumregs
       (lambda (x) (??instruction)))
     )
   )
+
+(define (??instruction2 insts [inputs '(#f)])
+  (define r1 (apply choose* inputs))
+  (define r2 (apply choose* inputs))
+  (define r3 (apply choose* inputs))
+  (apply choose*
+    (for/list ([constructor insts])
+      (cond
+        [(= 1 (procedure-arity constructor))
+          (constructor (l/register r1))]
+        [(= 2 (procedure-arity constructor))
+          (constructor (l/register r1) (l/register r2))]
+        [else
+          (constructor (l/register r1) (l/register r2) (l/register r3))]
+        )
+      )
+    )
+  )
+
+(define (??program2 n k insts)
+  (l/program
+    n
+    (for/list ([output (in-range n (+ n k))])
+     (??instruction2 insts (build-list output identity)))))
