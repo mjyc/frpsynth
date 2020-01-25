@@ -4,7 +4,9 @@
   (only-in racket/base exn:fail?)
   (prefix-in s/ "../../streams/disctime.rkt")
   (prefix-in l/ "../../lang.rkt")
-  "../../hole.rkt")
+  "../../hole.rkt"
+  (prefix-in logger- "../../logger.rkt")
+  )
 
 (provide (all-defined-out))
 
@@ -202,7 +204,8 @@
           (l/merge (l/register 2) (l/register 3))
           (l/scan + 0 (l/register 4))
           )))
-    ; (displayln (list "spec" spec))
+    (logger-debug "spec:")
+    (logger-debug (l/program->string spec))
     (define sketch
       (??program numinputs (length (l/program-instructions spec))
         (list
@@ -214,15 +217,17 @@
           )
         )
       )
-    ; (displayln (list "sketch" (l/program->string sketch)))
+    (logger-debug "sketch:")
+    (logger-debug (l/program->string sketch))
     (define inputs
       (list
         (list #t s/noevent #t s/noevent)
         (list s/noevent #f s/noevent #f)
         ))
-    ; (displayln (list "inputs" inputs))
-    ; (displayln "(s/program-interpret spec inputs):")
-    ; (displayln (s/program-interpret spec inputs))
+    (logger-debug "inputs:")
+    (logger-debug inputs)
+    (logger-debug "(s/program-interpret spec inputs):")
+    (logger-debug (s/program-interpret spec inputs))
 
     (define M
       (solve
@@ -234,8 +239,8 @@
       )
     (check-true (sat? M))
     (define result (evaluate sketch M))
-    ; (displayln "angexe result:")
-    ; (displayln (l/program->string result))
+    (logger-debug "angexe result:")
+    (logger-debug (l/program->string result))
     (check-equal? (s/program-interpret result inputs) (list 1 0 1 0))
     )
   )
@@ -252,7 +257,8 @@
           (l/merge (l/register 2) (l/register 3))
           (l/scan + 0 (l/register 4))
           )))
-    ; (displayln (list "spec" spec))
+    (logger-debug "spec:")
+    (logger-debug (l/program->string spec))
     (define sketch
       (??program numinputs (length (l/program-instructions spec))
         (list
@@ -264,7 +270,8 @@
           )
         )
       )
-    ; (displayln (list "sketch" sketch))
+    (logger-debug "sketch:")
+    (logger-debug (l/program->string sketch))
     (define len 4)
     (define sym-inputs
       (list
@@ -281,8 +288,8 @@
       )
     (check-true (sat? M))
     (define result (evaluate sketch M))
-    ; (displayln "synthe result:")
-    ; (displayln (l/program->string result))
+    (logger-debug "synthe result:")
+    (logger-debug (l/program->string result))
     (define test-inputs
       (list
         (list #t s/noevent #t s/noevent)

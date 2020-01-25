@@ -31,8 +31,6 @@
   )
 
 (define (mapTo val stream)
-  ; (displayln (list "val" val))
-  ; (displayln (list "stream" stream))
   (r/map (lambda (x) (if (nevt? x) x val)) stream)
   )
 
@@ -117,8 +115,6 @@
 ; Interpreters
 
 (define (instruction-interpret inst regs)
-  ; (displayln (list "inst" inst))
-  ; (displayln (list "regs" regs))
   (match inst
     [(l/register idx) (list-ref regs idx)]
     [(l/map a b) (map a (instruction-interpret b regs))]
@@ -133,8 +129,6 @@
   )
 
 (define (program-interpret prog inputs)
-  ; (displayln (list "prog" prog))
-  ; (displayln (list "inputs" inputs))
   (unless (= (l/program-numinputs prog) (length inputs))
     (argument-error 'program-interpret "expected ~a inputs, given ~a" (l/program-numinputs prog) inputs))
   (define (exec insts regs)
@@ -149,13 +143,11 @@
       ))
   (define regs
     (exec (l/program-instructions prog) inputs))
-  ; (displayln (list "regs" regs))
   (define output
     (if (or (empty? regs) (= (length regs) (length inputs)))
       '()
       (first (reverse regs)))
     )
-  ; (displayln (list "output" output))
   output
   )
 
