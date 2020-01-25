@@ -1,7 +1,6 @@
 #lang rosette/safe
 
 (require rackunit rackunit/text-ui
- (only-in racket/base build-list)
  (prefix-in s/ "../../streams/tvpair.rkt")
  (prefix-in l/ "../../lang.rkt")
  "../../hole.rkt")
@@ -259,10 +258,14 @@
           )))
     ; (displayln (list "spec" spec))
     (define sketch
-      (l/program
-        numinputs
-        (build-list (length (l/program-instructions spec))
-          (lambda (x) (??instruction)))
+      (??program numinputs (length (l/program-instructions spec))
+        (list
+          l/merge
+          (lambda (x) (l/map add1 x))
+          (lambda (x) (l/mapTo (??constant) x))
+          (lambda (x) (l/filter odd? x))
+          (lambda (x) (l/scan + 0 x))
+          )
         ))
     ; (displayln (list "sketch" sketch))
     (define inputs

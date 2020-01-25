@@ -3,7 +3,7 @@
 (provide (all-defined-out))
 
 (require
-  (only-in racket/base for/list string->number) ; don't use with sym-vars
+  (only-in racket/base for/list build-list string->number make-parameter raise-argument-error) ; don't use with sym-vars
   (only-in racket/list make-list) ; don't use with sym-vars
   (only-in racket/string string-join) ; don't use with sym-vars
   rosette/lib/angelic rosette/lib/match
@@ -69,14 +69,22 @@
     (reverse (drop (reverse stream) period)))
   )
 
+(define current-maxnumdelayregs
+  (make-parameter 10
+    (lambda (mndr)
+      (unless (or (false? mndr) (and (integer? mndr) (positive? mndr)))
+        (raise-argument-error 'current-bitwidth "positive integer or #f" mndr))
+      mndr)))
+
 (define (delay-lifted period stream)
+  (define maxnumdelayregs
+    (if (> (current-maxnumdelayregs) (length stream))
+      (length stream)
+      (current-maxnumdelayregs)))
   (define out-streams
-    (list
-      (delay 1 stream)
-      (delay 2 stream)
-      (delay 3 stream)
-      (delay 4 stream)
-      (delay 5 stream)
+    (build-list
+      maxnumdelayregs
+      (lambda (i) (delay (+ i 1) stream))
       ))
   (list-ref out-streams (- period 1))
   )

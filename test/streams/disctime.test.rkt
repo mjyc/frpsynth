@@ -1,9 +1,10 @@
 #lang rosette/safe
 
 (require rackunit rackunit/text-ui
- (prefix-in s/ "../../streams/disctime.rkt")
- (prefix-in l/ "../../lang.rkt")
- "../../hole.rkt")
+  (only-in racket/base exn:fail?)
+  (prefix-in s/ "../../streams/disctime.rkt")
+  (prefix-in l/ "../../lang.rkt")
+  "../../hole.rkt")
 
 (provide (all-defined-out))
 
@@ -53,6 +54,29 @@
     (check-equal?
       (s/delay 2 (list 1 2 3))
       (list s/noevent s/noevent 1)
+      )
+    )
+  )
+
+(define (test-delay-lifted)
+  (test-case
+    "test-delay-lifted"
+    (check-exn
+      exn:fail?
+      (lambda () (s/delay-lifted 0 (list 1 2 3)))
+      )
+    (check-equal?
+      (s/delay-lifted 1 (list 1 2 3))
+      (list s/nevt 1 2)
+      )
+    (check-equal?
+      (s/delay-lifted 2 (list 1 2 3))
+      (list s/nevt s/nevt 1)
+      )
+    ; creates empty stream
+    (check-equal?
+      (s/delay-lifted 3 (list 1 2 3))
+      (list s/nevt s/nevt s/nevt)
       )
     )
   )
@@ -279,6 +303,7 @@
     (test-map)
     (test-filter)
     (test-delay)
+    (test-delay-lifted)
     (test-from-diagram)
     (test-instruction-interpret)
     (test-program-interpret)
