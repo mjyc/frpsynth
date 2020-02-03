@@ -255,7 +255,10 @@
     (define result (evaluate sketch M))
     (logger-debug "angexe result:")
     (logger-debug (l/program->string result))
-    (check-equal? (s/program-interpret result inputs) (list 1 0 1 0))
+    (check-equal?
+      (s/program-interpret result inputs) ; actual
+      (s/program-interpret spec inputs) ; expected
+      )
     )
   )
 
@@ -309,8 +312,9 @@
         (list s/noevent #f s/noevent #f)
         ))
     (check-equal?
-      (s/program-interpret result test-inputs)
-      (list 1 0 1 0))
+      (s/program-interpret result test-inputs) ; actual
+      (s/program-interpret spec test-inputs) ; expected
+      )
     )
   )
 
