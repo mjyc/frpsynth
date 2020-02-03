@@ -95,7 +95,8 @@
 ; TODO:
 ; - define the length of 1 period
 ; - support 2nd argument "values"; see https://github.com/cyclejs/cyclejs/blob/master/time/src/diagram.ts
-(define (from-diagram diagramString)
+ ; [values (make-hash)]
+ (define (from-diagram diagramString)
   (define characters (cdr (drop-right (string-split diagramString "") 1)))
   (define (rec chars outstream)
     (match chars
