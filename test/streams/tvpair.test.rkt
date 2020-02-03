@@ -226,8 +226,13 @@
   (test-case
     "test-solve"
     (define inst (l/map add1 (list (s/event x y))))
-    (define sol (solve
-      (assert (equal? (s/instruction-interpret inst '()) (list (s/event 0 2))))))
+    (define sol
+      (time
+        (solve
+          (assert (equal? (s/instruction-interpret inst '()) (list (s/event 0 2))))
+          )
+        )
+      )
     (check-true (sat? sol))
     (check-equal? (evaluate (list x y) sol) (list 0 1))
 
@@ -237,8 +242,13 @@
         (l/filter odd? (list (s/event x y)))
         )
       )
-    (define sol2 (solve
-      (assert (equal? (s/instruction-interpret inst2 '()) (list (s/event 0 2))))))
+    (define sol2
+      (time
+        (solve
+          (assert (equal? (s/instruction-interpret inst2 '()) (list (s/event 0 2))))
+          )
+        )
+      )
     (check-true (sat? sol2))
     (check-equal? (evaluate (list b x y) sol2) (list #t 0 1))
     )
@@ -283,12 +293,13 @@
     (logger-debug (s/program-interpret spec inputs))
 
     (define M
-      (solve
-        (assert
-          (equal?
-            (s/program-interpret spec inputs)
-            (s/program-interpret sketch inputs)
-            )))
+      (time
+        (solve
+          (assert
+            (equal?
+              (s/program-interpret spec inputs)
+              (s/program-interpret sketch inputs)
+              ))))
       )
     (check-true (sat? M))
     (define result (evaluate sketch M))

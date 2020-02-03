@@ -3,7 +3,7 @@
 (provide (all-defined-out))
 
 (require
-  (only-in racket/base for/list build-list string->number make-parameter raise-argument-error) ; don't use with sym-vars
+  (only-in racket/base for/list string->number string->symbol build-list make-hash make-parameter hash-ref raise-argument-error) ; don't use with sym-vars
   (only-in racket/list make-list) ; don't use with sym-vars
   (only-in racket/string string-join) ; don't use with sym-vars
   rosette/lib/angelic rosette/lib/match
@@ -90,11 +90,8 @@
 
 ; Sources
 
-; TODO:
-; - define the length of 1 period
-; - support 2nd argument "values"; see https://github.com/cyclejs/cyclejs/blob/master/time/src/diagram.ts
- ; [values (make-hash)]
- (define (from-diagram diagramString)
+; TODO: define the length of 1 period
+(define (from-diagram diagramString [values (make-hash)])
   (define characters (cdr (drop-right (string-split diagramString "") 1)))
   (define (rec chars outstream)
     (match chars
@@ -102,10 +99,16 @@
       [(cons "t" xs) (rec xs (cons #t outstream))]
       [(cons "f" xs) (rec xs (cons #f outstream))]
       [(cons x xs)
-        (match x
-          [(regexp #rx"[0-9]") (rec xs (cons (string->number x) outstream))]
-          [_ (rec xs (cons x outstream))]
-          )]
+        (define xsym (hash-ref values (string->symbol x) (void)))
+        (if
+          (not (eq? xsym (void)))
+          (rec xs (cons xsym outstream))
+          (match x
+            [(regexp #rx"[0-9]") (rec xs (cons (string->number x) outstream))]
+            [_ (rec xs (cons x outstream))]
+            )
+          )
+        ]
       ['() outstream]
       )
     )

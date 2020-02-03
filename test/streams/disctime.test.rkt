@@ -89,13 +89,23 @@
 (define (test-from-diagram)
   (test-case
     "test-from-diagram"
-    (define outstream1 (s/from-diagram "1234"))
+    (define outstream1 (s/from-diagram "abcd"))
     (define expected1
-      (list 1 2 3 4))
+      (list "a" "b" "c" "d"))
     (check-equal? outstream1 expected1)
+
     (define outstream2 (s/from-diagram "5--6"))
     (define expected2 (list 5 s/noevent s/noevent 6))
     (check-equal? outstream2 expected2)
+
+    (define outstream3
+      (s/from-diagram
+        "a-b-"
+        #hash((a . "hello") (b . "bye"))
+        )
+      )
+    (define expected3 (list "hello" s/noevent "bye" s/noevent))
+    (check-equal? outstream3 expected3)
     )
   )
 
