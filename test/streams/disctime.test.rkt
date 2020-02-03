@@ -2,6 +2,7 @@
 
 (require rackunit rackunit/text-ui
   (only-in racket/base exn:fail?)
+  rosette/lib/angelic
   (prefix-in s/ "../../streams/disctime.rkt")
   (prefix-in l/ "../../lang.rkt")
   "../../hole.rkt"
@@ -224,10 +225,8 @@
       (??program numinputs (length (l/program-instructions spec))
         (list
           l/merge
-          (lambda (x) (l/map add1 x))
           (lambda (x) (l/mapTo (??constant) x))
-          (lambda (x) (l/filter odd? x))
-          (lambda (x) (l/scan + 0 x))
+          (lambda (x) (l/scan (choose* + -) (??constant) x))
           )
         )
       )
@@ -278,10 +277,8 @@
       (??program numinputs (length (l/program-instructions spec))
         (list
           l/merge
-          (lambda (x) (l/map add1 x))
           (lambda (x) (l/mapTo (??constant) x))
-          (lambda (x) (l/filter odd? x))
-          (lambda (x) (l/scan + 0 x))
+          (lambda (x) (l/scan (choose* + -) (??constant) x))
           )
         )
       )
